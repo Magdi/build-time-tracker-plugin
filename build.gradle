@@ -39,12 +39,13 @@ dependencies {
   compile 'net.sf.opencsv:opencsv:2.3'
   compile 'org.ocpsoft.prettytime:prettytime:3.2.5.Final'
   compile 'joda-time:joda-time:2.4'
+  compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
 
   testCompile 'junit:junit:4.11'
 }
 
 group = 'net.rdrei.android.buildtimetracker'
-version = '0.8.0'
+version = '0.10.0'
 
 install {
   repositories.mavenInstaller {
@@ -75,9 +76,9 @@ modifyPom {
     inceptionYear '2014'
 
     scm {
-      url 'https://github.com/passy/build-time-tracker-plugin'
-      connection 'scm:git:git://github.com/passy/build-time-tracker-plugin.git'
-      developerConnection 'scm:git:ssh://git@github.com/passy/build-time-tracker-plugin.git'
+      url 'https://github.com/bryanstern/build-time-tracker-plugin'
+      connection 'scm:git:git://github.com/bryanstern/build-time-tracker-plugin.git'
+      developerConnection 'scm:git:ssh://git@github.com/bryanstern/build-time-tracker-plugin.git'
     }
 
     licenses {
@@ -93,6 +94,11 @@ modifyPom {
         id 'passy'
         name 'Pascal Hartig'
         email 'phartig@rdrei.net'
+      }
+      developer {
+        id 'bryanstern'
+        name 'Bryan Stern'
+        email 'stern.bry@gmail.com'
       }
     }
   }
