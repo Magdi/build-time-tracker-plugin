@@ -1,5 +1,6 @@
 package net.rdrei.android.buildtimetracker.reporters
 
+import groovy.json.JsonBuilder
 import net.rdrei.android.buildtimetracker.Timing
 import org.gradle.api.logging.Logger
 import groovyx.net.http.HTTPBuilder
@@ -36,22 +37,24 @@ class RestReporter extends AbstractBuildTimeTrackerReporter {
         def cpuId = info.getCPUIdentifier()
         def maxMem = info.getMaxMemory()
         def measurements = []
+        def ultimateSuccess = timings.every { it.success }
 
         timings.eachWithIndex { it, index ->
             measurements << [
-                    timestamp: timestamp,
-                    order    : index,
-                    task     : it.path,
-                    success  : it.success,
-                    did_work : it.didWork,
-                    skipped  : it.skipped,
-                    ms       : it.ms,
-                    date     : df.format(new Date(timestamp)),
-                    cpu      : cpuId,
-                    memory   : maxMem,
-                    os       : osId,
-                    hostname : hostname,
-                    gitSha   : getOption("git", "")
+                    timestamp       : timestamp,
+                    order           : index,
+                    task            : it.path,
+                    success         : it.success,
+                    did_work        : it.didWork,
+                    skipped         : it.skipped,
+                    ms              : it.ms,
+                    date            : df.format(new Date(timestamp)),
+                    cpu             : cpuId,
+                    memory          : maxMem,
+                    os              : osId,
+                    hostname        : hostname,
+                    git_sha         : getOption("git", ""),
+                    ultimate_success: ultimateSuccess
             ]
         }
 
@@ -60,13 +63,15 @@ class RestReporter extends AbstractBuildTimeTrackerReporter {
 
     @Override
     def run(List<Timing> timings) {
-        def measurements = measurements(timings)
+        def data = measurements(timings)
+
+        logger.quiet new JsonBuilder(data).toPrettyString()
 
         // write to server
         def url = getOption("url", null)
         def http = new HTTPBuilder(url)
         http.request(POST, JSON) { req ->
-            body = measurements
+            body = data
             response.success = { resp, json ->
                 logger.quiet "Posted results"
             }
