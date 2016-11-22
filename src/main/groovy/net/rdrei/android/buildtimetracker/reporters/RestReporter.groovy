@@ -48,7 +48,7 @@ class RestReporter extends AbstractBuildTimeTrackerReporter {
                     did_work        : it.didWork,
                     skipped         : it.skipped,
                     ms              : it.ms,
-                    date            : df.format(new Date(timestamp)),
+//                    date            : df.format(new Date(timestamp)),
                     cpu             : cpuId,
                     memory          : maxMem,
                     os              : osId,
@@ -72,8 +72,9 @@ class RestReporter extends AbstractBuildTimeTrackerReporter {
         def http = new HTTPBuilder(url)
         http.request(POST, JSON) { req ->
             body = data
-            response.success = { resp, json ->
-                logger.quiet "Posted results"
+            response.success = { resp ->
+                logger.quiet "Posted results {$resp.status}"
+                logger.quiet "{$resp}"
             }
             response.failure = {
                 logger.quiet "Failed to post results"
