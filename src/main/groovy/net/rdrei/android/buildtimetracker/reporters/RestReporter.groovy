@@ -5,6 +5,10 @@ import net.rdrei.android.buildtimetracker.Timing
 import org.gradle.api.logging.Logger
 import groovyx.net.http.HTTPBuilder
 import org.gradle.internal.TrueTimeProvider
+import org.gradle.internal.impldep.org.apache.http.HttpRequest
+import org.gradle.internal.impldep.org.apache.http.HttpResponse
+import org.gradle.internal.impldep.org.apache.http.impl.client.DefaultRedirectStrategy
+import org.gradle.internal.impldep.org.apache.http.protocol.HttpContext
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -70,6 +74,14 @@ class RestReporter extends AbstractBuildTimeTrackerReporter {
         // write to server
         def url = getOption("url", null)
         def http = new HTTPBuilder(url)
+        http.client.setRedirectStrategy(new DefaultRedirectStrategy() {
+            @Override
+            boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
+                def redirected = super.isRedirected(request, response, context)
+                return redirected || response.getStatusLine().getStatusCode() == 302
+            }
+        })
+
         http.request(POST, JSON) { req ->
             body = data
             response.success = { resp ->
