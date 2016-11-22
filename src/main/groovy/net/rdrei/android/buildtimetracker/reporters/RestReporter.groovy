@@ -74,7 +74,7 @@ class RestReporter extends AbstractBuildTimeTrackerReporter {
             body = data
             response.success = { resp ->
                 logger.quiet "Posted results {$resp.status}"
-                logger.quiet "{$resp}"
+                logger.quiet "{$resp.data}"
             }
             response.failure = {
                 logger.quiet "Failed to post results"
